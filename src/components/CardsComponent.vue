@@ -166,7 +166,7 @@ export default {
 
 .cards-title {
   font-size: 2.4rem;
-  font-weight: 700;
+  font-weight: 701;
   color: #2e7d32;
   margin-bottom: 8px;
 }
