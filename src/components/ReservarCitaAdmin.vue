@@ -46,14 +46,9 @@
     <v-main>
       <v-container fluid class="d-flex justify-center">
 
-        <v-card
-          class="pa-6"
-          max-width="1100"
-          width="100%"
-          elevation="3"
-        >
+        <v-card class="pa-6" max-width="1100" width="100%" elevation="3">
           <v-card-title class="text-h6 mb-4">
-            Reservar cita 
+            Reservar cita
           </v-card-title>
 
           <!-- FECHA -->
@@ -64,6 +59,7 @@
                 width="500"
                 color="success"
                 :first-day-of-week="1"
+                :allowed-dates="fechaPermitida"
               />
             </v-col>
           </v-row>
@@ -140,6 +136,8 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
+const API_URL = 'https://vetplus-clinica-api.onrender.com'
+
 export default {
   name: 'ReservarCitaAdmin',
 
@@ -156,11 +154,18 @@ export default {
         nombreCliente: '',
         dni: '',
         nombreMascota: ''
-      }
+      },
+
+      hoy: new Date().toISOString().split('T')[0]
     }
   },
 
   methods: {
+    fechaPermitida (fecha) {
+      // 🔒 Bloquea días anteriores a hoy
+      return fecha >= this.hoy
+    },
+
     seleccionarHora (hora) {
       if (!this.horaDisponible(hora)) return
       this.horaSeleccionada = hora
@@ -178,7 +183,7 @@ export default {
     },
 
     guardarCita () {
-      axios.post('http://localhost:8081/citas', this.formulario)
+      axios.post(`${API_URL}/citas`, this.formulario)
         .then(() => {
           Swal.fire({
             icon: 'success',
@@ -228,7 +233,7 @@ export default {
       this.horaSeleccionada = null
       this.formulario.hora = ''
 
-      axios.get('http://localhost:8081/citas/fecha', {
+      axios.get(`${API_URL}/citas/fecha`, {
         params: { fecha: nuevaFecha }
       })
         .then(res => {

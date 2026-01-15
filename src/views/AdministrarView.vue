@@ -1,12 +1,10 @@
 <template>
   <v-app>
 
-    <!-- HEADER -->
     <v-app-bar app color="success" dark elevation="2">
       <v-app-bar-title>Clínica · Gestión</v-app-bar-title>
     </v-app-bar>
 
-    <!-- DRAWER -->
     <v-navigation-drawer app permanent class="drawer">
       <v-list dense>
 
@@ -21,7 +19,6 @@
 
         <v-divider class="my-2" />
 
-        <!-- NUEVO: RESERVAR CITA ADMIN -->
         <v-list-item link to="/admin/reservar">
           <v-list-item-icon>
             <v-icon>mdi-calendar-plus</v-icon>
@@ -31,7 +28,6 @@
           </v-list-item-content>
         </v-list-item>
 
-        <!-- GESTIÓN DE CITAS -->
         <v-list-item link>
           <v-list-item-icon>
             <v-icon>mdi-calendar</v-icon>
@@ -48,12 +44,7 @@
     <v-main>
       <v-container fluid class="d-flex justify-center">
 
-        <v-card
-          class="pa-6"
-          max-width="1100"
-          width="100%"
-          elevation="3"
-        >
+        <v-card class="pa-6" max-width="1100" width="100%" elevation="3">
 
           <v-card-title class="text-h6 mb-4">
             Administrar citas
@@ -77,22 +68,11 @@
           >
 
             <template slot="item.acciones" slot-scope="props">
-              <v-btn
-                icon
-                small
-                color="primary"
-                class="mr-2"
-                @click="abrirEditar(props.item)"
-              >
+              <v-btn icon small color="primary" class="mr-2" @click="abrirEditar(props.item)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
 
-              <v-btn
-                icon
-                small
-                color="red"
-                @click="abrirEliminar(props.item)"
-              >
+              <v-btn icon small color="red" @click="abrirEliminar(props.item)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </template>
@@ -114,8 +94,24 @@
             <v-text-field v-model="formulario.nombreCliente" label="Nombre" />
             <v-text-field v-model="formulario.dni" label="DNI" />
             <v-text-field v-model="formulario.nombreMascota" label="Mascota" />
-            <v-text-field v-model="formulario.fecha" label="Fecha" />
-            <v-text-field v-model="formulario.hora" label="Hora" />
+
+            <!-- CALENDARIO -->
+            <v-date-picker
+              v-model="formulario.fecha"
+              color="success"
+              :allowed-dates="fechaPermitida"
+              width="100%"
+            />
+
+            <!-- HORAS -->
+            <v-select
+              v-model="formulario.hora"
+              :items="horasDisponiblesEdicion"
+              label="Hora"
+              outlined
+              dense
+              class="mt-3"
+            />
           </v-form>
         </v-card-text>
 
@@ -131,10 +127,7 @@
     <v-dialog v-model="modalEliminar" max-width="400">
       <v-card>
         <v-card-title>¿Eliminar cita?</v-card-title>
-
-        <v-card-text>
-          Esta acción no se puede deshacer
-        </v-card-text>
+        <v-card-text>Esta acción no se puede deshacer</v-card-text>
 
         <v-card-actions>
           <v-spacer />
@@ -149,6 +142,8 @@
 
 <script>
 import axios from 'axios'
+
+const API_URL = 'https://vetplus-clinica-api.onrender.com'
 
 export default {
   name: 'AdministrarView',
@@ -171,6 +166,15 @@ export default {
         hora: ''
       },
 
+      hoy: new Date().toISOString().split('T')[0],
+
+      horasBase: [
+        '10:00', '11:00', '12:00', '13:00', '14:00',
+        '17:00', '18:00', '19:00', '20:00'
+      ],
+
+      horasOcupadasFecha: [],
+
       headers: [
         { text: 'Nombre', value: 'nombreCliente' },
         { text: 'DNI', value: 'dni' },
@@ -182,25 +186,50 @@ export default {
     }
   },
 
+  computed: {
+    horasDisponiblesEdicion () {
+      return this.horasBase.filter(h =>
+        !this.horasOcupadasFecha.includes(h) || h === this.formulario.hora
+      )
+    }
+  },
+
   mounted () {
     this.cargarCitas()
   },
 
   methods: {
+    fechaPermitida (fecha) {
+      // 🔒 Bloquea días anteriores a hoy
+      // ✔ pero permite mantener la fecha original
+      return fecha >= this.hoy || fecha === this.formulario.fecha
+    },
+
     cargarCitas () {
-      axios
-        .get('http://localhost:8081/citas')
+      axios.get(`${API_URL}/citas`)
         .then(res => (this.citas = res.data))
+        .catch(() => (this.citas = []))
     },
 
     abrirEditar (cita) {
       this.formulario = { ...cita }
       this.modalEditar = true
+
+      axios.get(`${API_URL}/citas/fecha`, {
+        params: { fecha: cita.fecha }
+      })
+        .then(res => {
+          this.horasOcupadasFecha = res.data
+            .filter(c => c.id !== cita.id)
+            .map(c => c.hora)
+        })
+        .catch(() => {
+          this.horasOcupadasFecha = []
+        })
     },
 
     guardarEdicion () {
-      axios
-        .put(`http://localhost:8081/citas/${this.formulario.id}`, this.formulario)
+      axios.put(`${API_URL}/citas/${this.formulario.id}`, this.formulario)
         .then(() => {
           this.modalEditar = false
           this.cargarCitas()
@@ -213,8 +242,7 @@ export default {
     },
 
     confirmarEliminar () {
-      axios
-        .delete(`http://localhost:8081/citas/${this.citaSeleccionada.id}`)
+      axios.delete(`${API_URL}/citas/${this.citaSeleccionada.id}`)
         .then(() => {
           this.modalEliminar = false
           this.cargarCitas()

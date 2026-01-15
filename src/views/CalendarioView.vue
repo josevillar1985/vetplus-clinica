@@ -1,161 +1,202 @@
 <template>
-  <v-container fluid class="fill-height">
+  <v-app>
     <HeaderComponent />
 
-    <v-row justify="center" class="mt-2">
-      <v-col cols="12" class="d-flex justify-center">
-        <v-date-picker v-model="formulario.fecha" width="500" color="success" />
-      </v-col>
-    </v-row>
+    <v-container fluid class="fill-height">
 
-    <v-row justify="center" class="mt-2">
-      <v-col cols="12">
-        <section class="seccion-horario">
-          <h3 class="titulo-horario">Horario disponible</h3>
+      <v-row justify="center" class="mt-2">
+        <v-col cols="12" class="d-flex justify-center">
+          <v-date-picker
+            v-model="formulario.fecha"
+            width="500"
+            color="success"
+            :allowed-dates="fechaPermitida"
+          />
+        </v-col>
+      </v-row>
 
-          <p class="turno-titulo">Mañana</p>
-          <div class="horas-grid">
-            <v-btn v-for="hora in horasManana" :key="hora" :color="horaDisponible(hora) ? 'success' : 'error'"
-              :disabled="!horaDisponible(hora)" :variant="hora === horaSeleccionada ? 'flat' : 'outlined'" size="small"
-              @click="seleccionarHora(hora)">
-              {{ hora }}
+      <v-row justify="center" class="mt-2">
+        <v-col cols="12">
+          <section class="seccion-horario">
+            <h3 class="titulo-horario">Horario disponible</h3>
+
+            <p class="turno-titulo">Mañana</p>
+            <div class="horas-grid">
+              <v-btn
+                v-for="hora in horasManana"
+                :key="hora"
+                :color="horaDisponible(hora) ? 'success' : 'error'"
+                :disabled="!horaDisponible(hora)"
+                :variant="hora === horaSeleccionada ? 'flat' : 'outlined'"
+                size="small"
+                @click="seleccionarHora(hora)"
+              >
+                {{ hora }}
+              </v-btn>
+            </div>
+
+            <p class="turno-titulo mt-2">Tarde</p>
+            <div class="horas-grid">
+              <v-btn
+                v-for="hora in horasTarde"
+                :key="hora"
+                :color="horaDisponible(hora) ? 'success' : 'error'"
+                :disabled="!horaDisponible(hora)"
+                :variant="hora === horaSeleccionada ? 'flat' : 'outlined'"
+                size="small"
+                @click="seleccionarHora(hora)"
+              >
+                {{ hora }}
+              </v-btn>
+            </div>
+
+            <v-btn
+              class="mt-4"
+              color="primary"
+              size="large"
+              :disabled="!horaSeleccionada || !formulario.fecha"
+              @click="mostrarDialogo = true"
+            >
+              Reservar cita
             </v-btn>
-          </div>
+          </section>
+        </v-col>
+      </v-row>
 
-          <p class="turno-titulo mt-2">Tarde</p>
-          <div class="horas-grid">
-            <v-btn v-for="hora in horasTarde" :key="hora" :color="horaDisponible(hora) ? 'success' : 'error'"
-              :disabled="!horaDisponible(hora)" :variant="hora === horaSeleccionada ? 'flat' : 'outlined'" size="small"
-              @click="seleccionarHora(hora)">
-              {{ hora }}
-            </v-btn>
-          </div>
+      <!-- DIALOGO -->
+      <v-dialog v-model="mostrarDialogo" max-width="500">
+        <v-card>
+          <v-card-title>Formulario de la cita</v-card-title>
 
-          <v-btn class="mt-4" color="primary" size="large" :disabled="!horaSeleccionada || !formulario.fecha"
-            @click="mostrarDialogo = true">
-            Reservar cita
-          </v-btn>
-        </section>
-      </v-col>
-    </v-row>
+          <v-card-text>
+            <p><strong>Fecha:</strong> {{ formulario.fecha }}</p>
+            <p><strong>Hora:</strong> {{ formulario.hora }}</p>
 
-    <v-dialog v-model="mostrarDialogo" max-width="500">
-      <v-card>
-        <v-card-title>Formulario de la cita</v-card-title>
+            <v-form>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="formulario.nombreCliente" label="Nombre" />
+                </v-col>
 
-        <v-card-text>
-          <p><strong>Fecha:</strong> {{ formulario.fecha }}</p>
-          <p><strong>Hora:</strong> {{ formulario.hora }}</p>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="formulario.dni" label="DNI" />
+                </v-col>
 
-          <v-form>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.nombreCliente" label="Nombre" />
-              </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="formulario.nombreMascota" label="Nombre de la mascota" />
+                </v-col>
+              </v-row>
 
-              <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.dni" label="DNI" />
-              </v-col>
+              <v-btn
+                color="success"
+                size="large"
+                class="mt-4"
+                @click="guardarCita"
+              >
+                Confirmar cita
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
-              <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.nombreMascota" label="Nombre de la mascota" />
-              </v-col>
-            </v-row>
-
-            <v-btn color="success" size="large" class="mt-4" @click="confirmarCita">
-              Confirmar cita
-            </v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </v-container>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
-import HeaderComponent from '@/components/HeaderComponent.vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import HeaderComponent from '@/components/HeaderComponent.vue'
+
+const API_URL = 'https://vetplus-clinica-api.onrender.com'
 
 export default {
-  name: 'CalendarioConHorario',
+  name: 'CalendarioView',
 
-  components: { HeaderComponent },
+  components: {
+    HeaderComponent
+  },
 
-  data() {
+  data () {
     return {
+      mostrarDialogo: false,
+
       horasManana: ['10:00', '11:00', '12:00', '13:00', '14:00'],
       horasTarde: ['17:00', '18:00', '19:00', '20:00'],
       horasNoDisponibles: [],
       horaSeleccionada: null,
-      mostrarDialogo: false,
+
       formulario: {
         fecha: '',
         hora: '',
         nombreCliente: '',
         dni: '',
         nombreMascota: ''
-      }
+      },
+
+      hoy: new Date().toISOString().split('T')[0]
     }
   },
 
   methods: {
-    seleccionarHora(hora) {
+    fechaPermitida (fecha) {
+      return fecha >= this.hoy
+    },
+
+    seleccionarHora (hora) {
       if (!this.horaDisponible(hora)) return
       this.horaSeleccionada = hora
       this.formulario.hora = hora
     },
 
-    horaDisponible(hora) {
+    horaDisponible (hora) {
       return !this.horasNoDisponibles.includes(hora)
     },
 
-    confirmarCita() {
-      axios.post('http://localhost:8081/citas', this.formulario)
+    guardarCita () {
+      axios.post(`${API_URL}/citas`, this.formulario)
         .then(() => {
-          this.mostrarDialogo = false
-
           Swal.fire({
             icon: 'success',
             title: 'Cita confirmada',
-            text: 'Tu cita se ha registrado correctamente',
-            confirmButtonColor: '#2e7d32'
-          }).then(() => {
-            this.$router.push('/')
+            text: 'Tu cita ha sido registrada correctamente'
           })
-        })
-        .catch(error => {
-          const mensaje =
-            error.response &&
-              error.response.data &&
-              typeof error.response.data === 'string'
-              ? error.response.data
-              : 'El DNI tiene que ser algo parecido a esto 12345678A'
 
+          this.mostrarDialogo = false
+          this.horaSeleccionada = null
+          this.formulario = {
+            fecha: '',
+            hora: '',
+            nombreCliente: '',
+            dni: '',
+            nombreMascota: ''
+          }
+          this.horasNoDisponibles = []
+        })
+        .catch(() => {
           Swal.fire({
             icon: 'error',
-            title: 'Error al reservar',
-            text: mensaje,
-            confirmButtonColor: '#c62828'
+            title: 'Error',
+            text: 'No se pudo guardar la cita'
           })
         })
     }
-
   },
 
   watch: {
-    'formulario.fecha'(nuevaFecha) {
+    'formulario.fecha' (nuevaFecha) {
       if (!nuevaFecha) return
 
       this.horaSeleccionada = null
       this.formulario.hora = ''
 
-      axios.get('http://localhost:8081/citas/fecha', {
+      axios.get(`${API_URL}/citas/fecha`, {
         params: { fecha: nuevaFecha }
       })
-        .then(response => {
+        .then(res => {
           this.horasNoDisponibles = [
-            ...new Set(response.data.map(c => c.hora))
+            ...new Set(res.data.map(c => c.hora))
           ]
         })
         .catch(() => {

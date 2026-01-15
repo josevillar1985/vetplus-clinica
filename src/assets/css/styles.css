@@ -6,16 +6,20 @@ html, body {
   color: #2e2e2e;
 }
 
-/* 🔥 AQUÍ ESTÁ LA CLAVE */
 .v-application {
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
-
   background: linear-gradient(
     180deg,
     #f8fafc 0%,
     #eef4f2 100%
   ) !important;
+}
+
+@media (max-width: 600px) {
+  .v-application {
+    padding: 16px;
+  }
 }
 
 
