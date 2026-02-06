@@ -112,8 +112,10 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
-// 🔥 URL NUEVA DEL BACKEND
-const API_URL = '/api'
+// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
+const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
+// cuando tengas HTTPS real:
+// const API_URL = 'https://api.vetplus.josevillar.com'
 
 export default {
   name: 'CalendarioView',
@@ -178,11 +180,11 @@ export default {
           }
           this.horasNoDisponibles = []
         })
-        .catch(() => {
+        .catch(err => {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo guardar la cita'
+            text: err.response?.data || 'No se pudo guardar la cita'
           })
         })
     }

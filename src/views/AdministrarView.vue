@@ -66,7 +66,6 @@
             :search="search"
             :items-per-page="5"
           >
-
             <template slot="item.acciones" slot-scope="props">
               <v-btn icon small color="primary" class="mr-2" @click="abrirEditar(props.item)">
                 <v-icon>mdi-pencil</v-icon>
@@ -76,7 +75,6 @@
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </template>
-
           </v-data-table>
 
         </v-card>
@@ -141,8 +139,10 @@
 <script>
 import axios from 'axios'
 
-// 🔥 URL NUEVA DEL BACKEND
+// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
 const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
+// cuando tengas HTTPS bueno:
+// const API_URL = 'https://api.vetplus.josevillar.com'
 
 export default {
   name: 'AdministrarView',

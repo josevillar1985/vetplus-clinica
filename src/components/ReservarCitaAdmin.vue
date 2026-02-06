@@ -145,7 +145,10 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
+// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
 const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
+// cuando tengas HTTPS real:
+// const API_URL = 'https://api.vetplus.josevillar.com'
 
 export default {
   name: 'ReservarCitaAdmin',
