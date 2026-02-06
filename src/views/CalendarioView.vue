@@ -113,7 +113,7 @@ import Swal from 'sweetalert2'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
 // 🔥 URL NUEVA DEL BACKEND
-const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
+const API_URL = 'https://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
 
 export default {
   name: 'CalendarioView',
