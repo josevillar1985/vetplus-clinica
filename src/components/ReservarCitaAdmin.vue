@@ -1,12 +1,10 @@
 <template>
   <v-app>
 
-    <!-- HEADER -->
     <v-app-bar app color="success" dark elevation="2">
       <v-app-bar-title>Clínica · Gestión</v-app-bar-title>
     </v-app-bar>
 
-    <!-- DRAWER -->
     <v-navigation-drawer app permanent class="drawer">
       <v-list dense>
 
@@ -42,7 +40,6 @@
       </v-list>
     </v-navigation-drawer>
 
-    <!-- MAIN -->
     <v-main>
       <v-container fluid class="d-flex justify-center">
 
@@ -51,7 +48,6 @@
             Reservar cita
           </v-card-title>
 
-          <!-- FECHA -->
           <v-row justify="center">
             <v-col cols="12" class="d-flex justify-center">
               <v-date-picker
@@ -64,7 +60,6 @@
             </v-col>
           </v-row>
 
-          <!-- HORAS -->
           <section class="seccion-horario mt-4">
             <p class="turno-titulo">Mañana</p>
             <div class="horas-grid">
@@ -97,7 +92,6 @@
             </div>
           </section>
 
-          <!-- FORMULARIO -->
           <v-form class="mt-6">
             <v-row>
               <v-col cols="12" md="6">
@@ -145,10 +139,8 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
-const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
-// cuando tengas HTTPS real:
-// const API_URL = 'https://api.vetplus.josevillar.com'
+// ✅ URL ACTUALIZADA: Usando HTTPS y el subdominio con guion compatible con Cloudflare
+const API_URL = 'https://api-vetplus.josevillar.com'
 
 export default {
   name: 'ReservarCitaAdmin',
@@ -233,6 +225,7 @@ export default {
     'formulario.fecha' (nuevaFecha) {
       if (!nuevaFecha) return
 
+      // Manejo de objeto Date si el componente lo devuelve así
       if (nuevaFecha instanceof Date) {
         const y = nuevaFecha.getFullYear()
         const m = String(nuevaFecha.getMonth() + 1).padStart(2, '0')
@@ -260,7 +253,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .drawer {
   background-color: #f5f5f5;
 }

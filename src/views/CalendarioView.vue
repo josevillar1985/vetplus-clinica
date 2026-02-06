@@ -11,6 +11,7 @@
             width="500"
             color="success"
             :allowed-dates="fechaPermitida"
+            :first-day-of-week="1"
           />
         </v-col>
       </v-row>
@@ -25,25 +26,25 @@
               <v-btn
                 v-for="hora in horasManana"
                 :key="hora"
-                :color="horaDisponible(hora) ? 'success' : 'error'"
+                :color="colorHora(hora)"
                 :disabled="!horaDisponible(hora)"
-                :variant="hora === horaSeleccionada ? 'flat' : 'outlined'"
                 size="small"
+                class="hora-btn"
                 @click="seleccionarHora(hora)"
               >
                 {{ hora }}
               </v-btn>
             </div>
 
-            <p class="turno-titulo mt-2">Tarde</p>
+            <p class="turno-titulo mt-4">Tarde</p>
             <div class="horas-grid">
               <v-btn
                 v-for="hora in horasTarde"
                 :key="hora"
-                :color="horaDisponible(hora) ? 'success' : 'error'"
+                :color="colorHora(hora)"
                 :disabled="!horaDisponible(hora)"
-                :variant="hora === horaSeleccionada ? 'flat' : 'outlined'"
                 size="small"
+                class="hora-btn"
                 @click="seleccionarHora(hora)"
               >
                 {{ hora }}
@@ -51,7 +52,7 @@
             </div>
 
             <v-btn
-              class="mt-4"
+              class="mt-6"
               color="primary"
               size="large"
               :disabled="!horaSeleccionada || !formulario.fecha"
@@ -66,7 +67,6 @@
       <v-dialog v-model="mostrarDialogo" max-width="500">
         <v-card>
           <v-card-title>Formulario de la cita</v-card-title>
-
           <v-card-text>
             <p><strong>Fecha:</strong> {{ formulario.fecha }}</p>
             <p><strong>Hora:</strong> {{ formulario.hora }}</p>
@@ -76,21 +76,17 @@
                 <v-col cols="12" md="6">
                   <v-text-field v-model="formulario.nombreCliente" label="Nombre" />
                 </v-col>
-
                 <v-col cols="12" md="6">
                   <v-text-field v-model="formulario.dni" label="DNI" />
                 </v-col>
-
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="formulario.nombreMascota"
-                    label="Nombre de la mascota"
-                  />
+                <v-col cols="12">
+                  <v-text-field v-model="formulario.nombreMascota" label="Nombre de la mascota" />
                 </v-col>
               </v-row>
 
               <v-btn
                 color="success"
+                block
                 size="large"
                 class="mt-4"
                 @click="guardarCita"
@@ -111,25 +107,19 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
-// 🔥 URL BASE DEL BACKEND ACTUALIZADA
-const API_URL = 'https://api.josevillar.com'
+const API_URL = 'https://api-vetplus.josevillar.com'
 
 export default {
   name: 'CalendarioView',
-
-  components: {
-    HeaderComponent
-  },
+  components: { HeaderComponent },
 
   data () {
     return {
       mostrarDialogo: false,
-
       horasManana: ['10:00', '11:00', '12:00', '13:00', '14:00'],
       horasTarde: ['17:00', '18:00', '19:00', '20:00'],
       horasNoDisponibles: [],
       horaSeleccionada: null,
-
       formulario: {
         fecha: '',
         hora: '',
@@ -137,7 +127,6 @@ export default {
         dni: '',
         nombreMascota: ''
       },
-
       hoy: new Date().toISOString().split('T')[0]
     }
   },
@@ -157,32 +146,24 @@ export default {
       return !this.horasNoDisponibles.includes(hora)
     },
 
+    // ✅ Nueva función para corregir el color azul
+    colorHora (hora) {
+      if (!this.horaDisponible(hora)) return 'error'
+      if (hora === this.horaSeleccionada) return 'primary' // Color al pulsar
+      return 'success' // Color disponible
+    },
+
     guardarCita () {
       axios.post(`${API_URL}/citas`, this.formulario)
         .then(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Cita confirmada',
-            text: 'Tu cita ha sido registrada correctamente'
-          })
-
+          Swal.fire({ icon: 'success', title: 'Cita confirmada', text: 'Registrada correctamente' })
           this.mostrarDialogo = false
           this.horaSeleccionada = null
-          this.formulario = {
-            fecha: '',
-            hora: '',
-            nombreCliente: '',
-            dni: '',
-            nombreMascota: ''
-          }
+          this.formulario = { fecha: '', hora: '', nombreCliente: '', dni: '', nombreMascota: '' }
           this.horasNoDisponibles = []
         })
         .catch(err => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.response?.data || 'No se pudo guardar la cita'
-          })
+          Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data || 'Error al guardar' })
         })
     }
   },
@@ -190,51 +171,23 @@ export default {
   watch: {
     'formulario.fecha' (nuevaFecha) {
       if (!nuevaFecha) return
-
       this.horaSeleccionada = null
       this.formulario.hora = ''
-
-      axios.get(`${API_URL}/citas/fecha`, {
-        params: { fecha: nuevaFecha }
-      })
+      axios.get(`${API_URL}/citas/fecha`, { params: { fecha: nuevaFecha } })
         .then(res => {
-          this.horasNoDisponibles = [
-            ...new Set(res.data.map(c => c.hora))
-          ]
+          this.horasNoDisponibles = [...new Set(res.data.map(c => c.hora))]
         })
-        .catch(() => {
-          this.horasNoDisponibles = []
-        })
+        .catch(() => { this.horasNoDisponibles = [] })
     }
   }
 }
 </script>
 
 <style scoped>
-.fill-height {
-  min-height: 100vh;
-  padding-top: 96px;
-}
-
-.seccion-horario {
-  text-align: center;
-}
-
-.titulo-horario {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.turno-titulo {
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.horas-grid {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+.fill-height { min-height: 100vh; padding-top: 96px; }
+.seccion-horario { text-align: center; }
+.titulo-horario { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+.turno-titulo { font-weight: 600; margin-bottom: 6px; }
+.horas-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.hora-btn { min-width: 80px; font-weight: 600; }
 </style>
