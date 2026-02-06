@@ -57,7 +57,6 @@
         <v-list-item to="/" exact @click="drawer = false">
           <v-list-item-title>Inicio</v-list-item-title>
         </v-list-item>
-
         <v-list-item to="/servicios" @click="drawer = false">
           <v-list-item-title>Servicios</v-list-item-title>
         </v-list-item>

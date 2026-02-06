@@ -83,7 +83,10 @@
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <v-text-field v-model="formulario.nombreMascota" label="Nombre de la mascota" />
+                  <v-text-field
+                    v-model="formulario.nombreMascota"
+                    label="Nombre de la mascota"
+                  />
                 </v-col>
               </v-row>
 
@@ -109,7 +112,8 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
-const API_URL = 'https://vetplus-clinica-api.onrender.com'
+// 🔥 URL NUEVA DEL BACKEND
+const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
 
 export default {
   name: 'CalendarioView',

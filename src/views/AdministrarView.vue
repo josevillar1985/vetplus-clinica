@@ -95,7 +95,6 @@
             <v-text-field v-model="formulario.dni" label="DNI" />
             <v-text-field v-model="formulario.nombreMascota" label="Mascota" />
 
-            <!-- CALENDARIO -->
             <v-date-picker
               v-model="formulario.fecha"
               color="success"
@@ -103,7 +102,6 @@
               width="100%"
             />
 
-            <!-- HORAS -->
             <v-select
               v-model="formulario.hora"
               :items="horasDisponiblesEdicion"
@@ -143,7 +141,8 @@
 <script>
 import axios from 'axios'
 
-const API_URL = 'https://vetplus-clinica-api.onrender.com'
+// 🔥 URL NUEVA DEL BACKEND
+const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
 
 export default {
   name: 'AdministrarView',
@@ -200,8 +199,6 @@ export default {
 
   methods: {
     fechaPermitida (fecha) {
-      // 🔒 Bloquea días anteriores a hoy
-      // ✔ pero permite mantener la fecha original
       return fecha >= this.hoy || fecha === this.formulario.fecha
     },
 

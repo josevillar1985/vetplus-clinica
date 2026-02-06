@@ -101,15 +101,24 @@
           <v-form class="mt-6">
             <v-row>
               <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.nombreCliente" label="Nombre del cliente" />
+                <v-text-field
+                  v-model="formulario.nombreCliente"
+                  label="Nombre del cliente"
+                />
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.dni" label="DNI" />
+                <v-text-field
+                  v-model="formulario.dni"
+                  label="DNI"
+                />
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field v-model="formulario.nombreMascota" label="Nombre de la mascota" />
+                <v-text-field
+                  v-model="formulario.nombreMascota"
+                  label="Nombre de la mascota"
+                />
               </v-col>
             </v-row>
 
@@ -136,7 +145,7 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const API_URL = 'https://vetplus-clinica-api.onrender.com'
+const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
 
 export default {
   name: 'ReservarCitaAdmin',
@@ -162,7 +171,6 @@ export default {
 
   methods: {
     fechaPermitida (fecha) {
-      // 🔒 Bloquea días anteriores a hoy
       return fecha >= this.hoy
     },
 
