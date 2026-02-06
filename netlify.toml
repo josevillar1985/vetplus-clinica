@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/api/*"
+  to = "https://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io/:splat"
+  status = 200
+  force = true
