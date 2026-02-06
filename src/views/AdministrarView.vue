@@ -40,7 +40,6 @@
       </v-list>
     </v-navigation-drawer>
 
-    <!-- MAIN -->
     <v-main>
       <v-container fluid class="d-flex justify-center">
 
@@ -82,7 +81,6 @@
       </v-container>
     </v-main>
 
-    <!-- MODAL EDITAR -->
     <v-dialog v-model="modalEditar" max-width="500">
       <v-card>
         <v-card-title>Editar cita</v-card-title>
@@ -119,7 +117,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- MODAL ELIMINAR -->
     <v-dialog v-model="modalEliminar" max-width="400">
       <v-card>
         <v-card-title>¿Eliminar cita?</v-card-title>
@@ -139,10 +136,8 @@
 <script>
 import axios from 'axios'
 
-// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
-const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
-// cuando tengas HTTPS bueno:
-// const API_URL = 'https://api.vetplus.josevillar.com'
+// 🔥 URL BASE DEL BACKEND ACTUALIZADA
+const API_URL = 'https://api.josevillar.com'
 
 export default {
   name: 'AdministrarView',

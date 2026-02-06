@@ -63,7 +63,6 @@
         </v-col>
       </v-row>
 
-      <!-- DIALOGO -->
       <v-dialog v-model="mostrarDialogo" max-width="500">
         <v-card>
           <v-card-title>Formulario de la cita</v-card-title>
@@ -112,10 +111,8 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
-// 🔥 URL BASE DEL BACKEND (USA SOLO UNA)
-const API_URL = 'http://pk0k8gg8gsokg880w4w004kg.46.225.92.227.sslip.io'
-// cuando tengas HTTPS real:
-// const API_URL = 'https://api.vetplus.josevillar.com'
+// 🔥 URL BASE DEL BACKEND ACTUALIZADA
+const API_URL = 'https://api.josevillar.com'
 
 export default {
   name: 'CalendarioView',
